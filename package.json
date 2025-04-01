@@ -4,7 +4,8 @@
   "type": "module",
   "main": "server.ts",
   "scripts": {
-    "compile": "tsc",
+    "build": "tsc",
+    "postbuild": "cpx \"src/server/public/**/*\" dist/server/public",
     "start": "node dist/server/server.js -p 4200",
     "container": "node dist/server/server.ts -p 4200 -c yes",
     "lint": "eslint 'src/**/*.ts'",
