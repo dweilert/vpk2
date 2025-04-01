@@ -338,17 +338,43 @@ function showNodeFnumORef(node) {
     }
 }
 
+
 //-------------------------------------------------------------------------
-// create the d3/graphviz graph
-// function createGraphORef(clusterORef) {
+// create the d3/graphviz graph with zoom enabled
 function createGraphORef(clusterORef) {
-    // Optional: set up container HTML as you already do...
-    graphvizManager.renderGraph('oRefWrapper', graphVizDataORef, oRefData.length, {
-        zoom: true,
-        trackContext: true,
-        onRenderEnd: addGraphvizOnClickORef,
-    });
+    try {
+        const wrapper = $('#oRefWrapper');
+        wrapper.empty(); // Clear old content
+
+        // If coming from the cluster tab, show the Return button
+        if (clusterORef === true) {
+            wrapper.append(
+                '<div class="vpkfont vpk-rtn-bg mt-1 mb-2 ml-2">' +
+                '<button type="button" class="mt-1 mb-1 btn btn-sm btn-secondary vpkButtons ml-2 px-2" ' +
+                " onclick=\"returnToWhereTab('Cluster','oRefWrapper')\">Return</button>" +
+                '<span class="px-2 vpkfont">to Cluster tab</span></div>'
+            );
+        }
+
+        // Render the graph with zoom and pan support
+        graphvizManager.renderGraph('oRefWrapper', graphVizDataORef, oRefData.length, {
+            zoom: true,
+            trackContext: true,
+            onRenderEnd: addGraphvizOnClickORef,
+        });
+
+        if (clusterORef === true) {
+            openTabOwnerRef();
+        }
+    } catch (err) {
+        $('#statusProcessing').hide();
+        console.error(`createGraphORef error: ${err.message}`);
+        console.error(err.stack);
+    }
 }
+
+
+
 
 //-------------------------------------------------------------------------
 // gets added to the generated viz graph

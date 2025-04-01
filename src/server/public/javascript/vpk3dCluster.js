@@ -55,7 +55,7 @@ scene = null;
 sceneToRender = null;
 
 createDefaultEngine = function () {
-    return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: false });
+    return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: true });
 };
 
 // External link to open K8s API documentation

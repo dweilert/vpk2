@@ -21,173 +21,165 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // document ready
 //----------------------------------------------------------
 
+
 let getFileIsSecret;
 
 $(document).ready(function () {
+
     // get version from server
     getVersion();
 
     // Vpk splash modal, hide after 3.5 seconds
-    $('#splashVpKModal').modal('show');
+    $("#splashVpKModal").modal('show');
     setTimeout(function () {
-        $('#splashVpKModal').modal('hide');
+        $("#splashVpKModal").modal('hide');
     }, 3500);
 
-    $('.carousel-item', '.multi-item-carousel')
-        .each(function () {
-            var next = $(this).next();
-            if (!next.length) {
-                next = $(this).siblings(':first');
-            }
-            next.children(':first-child').clone().appendTo($(this));
-        })
-        .each(function () {
-            var prev = $(this).prev();
-            if (!prev.length) {
-                prev = $(this).siblings(':last');
-            }
-            prev.children(':nth-last-child(2)').clone().prependTo($(this));
-        });
+    $('.carousel-item', '.multi-item-carousel').each(function () {
+        var next = $(this).next();
+        if (!next.length) {
+            next = $(this).siblings(':first');
+        }
+        next.children(':first-child').clone().appendTo($(this));
+    }).each(function () {
+        var prev = $(this).prev();
+        if (!prev.length) {
+            prev = $(this).siblings(':last');
+        }
+        prev.children(':nth-last-child(2)').clone().prependTo($(this));
+    });
 
-    $('.modal')
-        .on('hidden.bs.modal', function (e) {
-            --bootstrapModalCounter;
-            if (bootstrapModalCounter > 0) {
-                //don't need to recalculate backdrop z-index; already handled by css
-                $('body').addClass('modal-open');
-            }
-        })
-        .on('show.bs.modal', function (e) {
-            ++bootstrapModalCounter;
+    $('.modal').on("hidden.bs.modal", function (e) {
+        --bootstrapModalCounter;
+        if (bootstrapModalCounter > 0) {
             //don't need to recalculate backdrop z-index; already handled by css
-        });
+            $('body').addClass('modal-open');
+        }
+    }).on("show.bs.modal", function (e) {
+        ++bootstrapModalCounter;
+        //don't need to recalculate backdrop z-index; already handled by css
+    });
 
-    $('#searchview').removeClass('active');
-    $('#searchview').removeClass('show');
 
-    $('#searchResults').hide();
+    $("#searchview").removeClass("active");
+    $("#searchview").removeClass("show");
 
-    $('#stats').removeClass('active');
-    $('#stats').removeClass('show');
+    $("#searchResults").hide();
 
-    $('#schematic').removeClass('active');
-    $('#schematic').removeClass('show');
+    $("#stats").removeClass("active");
+    $("#stats").removeClass("show");
 
-    $('#security').removeClass('active');
-    $('#security').removeClass('show');
+    $("#schematic").removeClass("active");
+    $("#schematic").removeClass("show");
 
-    $('#storage').removeClass('active');
-    $('#storage').removeClass('show');
+    $("#security").removeClass("active");
+    $("#security").removeClass("show");
 
-    $('#cluster').removeClass('active');
-    $('#cluster').removeClass('show');
+    $("#storage").removeClass("active");
+    $("#storage").removeClass("show");
 
-    $('#ownerlinks').removeClass('active');
-    $('#ownerlinks').removeClass('show');
+    $("#cluster").removeClass("active");
+    $("#cluster").removeClass("show");
+
+    $("#ownerlinks").removeClass("active");
+    $("#ownerlinks").removeClass("show");
     $('#ownerlinks').hide();
 
-    $('#evtMsgs').removeClass('active');
-    $('#evtMsgs').removeClass('show');
+    $("#evtMsgs").removeClass("active");
+    $("#evtMsgs").removeClass("show");
 
     // get the name of selected tab and process
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (evt) {
         currentTab = $(evt.target).attr('href');
         let px;
         let element;
-        hideVpkTooltip();
+        hideVpkTooltip()
         timeLapseClose();
         setCurrentTab(currentTab);
     });
 
-    $('#tableSearch').on('click-cell.bs.table', function (field, value, row, $el) {
+    $("#tableSearch").on("click-cell.bs.table", function (field, value, row, $el) {
         selectedDef = $el.src;
         if ($el.kind === 'Secret') {
-            getDefSec(selectedDef); // secret modal with decode option
+            getDefSec(selectedDef);   // secret modal with decode option
         } else {
             getDefFnum(selectedDef);
         }
     });
 
-    $('#tableContainerImages').on('click-cell.bs.table', function (field, value, row, $el) {
+    $("#tableContainerImages").on("click-cell.bs.table", function (field, value, row, $el) {
         selectedDef = $el.fnum;
         if ($el.kind === 'Secret') {
-            getDefSec(selectedDef); // secret modal with decode option
+            getDefSec(selectedDef);   // secret modal with decode option
         } else {
             getDefFnum(selectedDef);
         }
     });
 
-    $('#tableEvents').on('click-cell.bs.table', function (field, value, row, $el) {
-        let html = '';
+    $("#tableEvents").on("click-cell.bs.table", function (field, value, row, $el) {
+        let html = "";
         let root = $el.root;
         if (typeof root === 'undefined') {
             evtMsgsShowSource($el.fnum);
         } else {
-            html =
-                '<div>' +
-                '<span class="text-center">' +
-                '<span class="mt-1 mr-4">' +
-                '<button type="button" class="btn btn-sm btn-primary ml-2" ' +
-                ' onclick="evtMsgsShowSchematic(\'' +
-                $el.namespace +
-                "','" +
-                $el.root +
-                '\')">View schematic for involved resource' +
-                '</button>' +
-                '</span>' +
-                '<span class="mt-1 pl-5 pr-5">' +
-                '<button type="button" class="btn btn-sm btn-primary ml-2 pl-4 pr-4" ' +
-                ' onclick="evtMsgsShowSource(\'' +
-                $el.fnum +
-                '\')"><span pl-5 pr-5>&nbsp;&nbsp;View Event message source&nbsp;&nbsp;</span>' +
-                '</button>' +
-                '</span></span></div>';
+            html = '<div>'
+                + '<span class="text-center">'
+                + '<span class="mt-1 mr-4">'
+                + '<button type="button" class="btn btn-sm btn-primary ml-2" '
+                + ' onclick="evtMsgsShowSchematic(\'' + $el.namespace + '\',\'' + $el.root + '\')">View schematic for involved resource'
+                + '</button>'
+                + '</span>'
+                + '<span class="mt-1 pl-5 pr-5">'
+                + '<button type="button" class="btn btn-sm btn-primary ml-2 pl-4 pr-4" '
+                + ' onclick="evtMsgsShowSource(\'' + $el.fnum + '\')"><span pl-5 pr-5>&nbsp;&nbsp;View Event message source&nbsp;&nbsp;</span>'
+                + '</button>'
+                + '</span></span></div>'
 
-            $('#evtMsgsBody').html(html);
-            $('#evtMsgsModal').modal('show');
+            $('#evtMsgsBody').html(html)
+            $("#evtMsgsModal").modal('show');
         }
     });
 
     // ChgDir modal
     $('#dsInstances').select2({
-        dropdownCssClass: 'vpkselect2',
-        selectionCssClass: 'vpkselect2',
-        placeholder: 'select snapshot',
+        dropdownCssClass: "vpkselect2",
+        selectionCssClass: "vpkselect2",
+        placeholder: "select snapshot",
         multiple: false,
-        width: 500,
+        width: 500
     });
     // Cluster tab
     $('#cluster-ns-filter').select2({
-        dropdownCssClass: 'vpkselect2',
-        selectionCssClass: 'vpkselect2',
-        placeholder: 'select namespace(s)',
+        dropdownCssClass: "vpkselect2",
+        selectionCssClass: "vpkselect2",
+        placeholder: "select namespace(s)",
         multiple: true,
-        width: 250,
+        width: 250
     });
 
     $('#timeLapse-ns-filter').select2({
-        dropdownCssClass: 'vpkselect2',
-        selectionCssClass: 'vpkselect2',
-        placeholder: 'select namespace(s)',
+        dropdownCssClass: "vpkselect2",
+        selectionCssClass: "vpkselect2",
+        placeholder: "select namespace(s)",
         multiple: true,
-        width: 250,
+        width: 250
     });
 
     // Workload Schematic tab
     $('#schematic-ns-filter').select2({
-        dropdownCssClass: 'vpkselect2',
-        selectionCssClass: 'vpkselect2',
-        placeholder: 'select namespace',
+        dropdownCssClass: "vpkselect2",
+        selectionCssClass: "vpkselect2",
+        placeholder: "select namespace",
         multiple: false,
-        width: 300,
+        width: 300
     });
     // Network tab
     $('#network-type-node-filter').select2({
-        dropdownCssClass: 'vpkselect2',
-        selectionCssClass: 'vpkselect2',
-        placeholder: 'select network filter type',
+        dropdownCssClass: "vpkselect2",
+        selectionCssClass: "vpkselect2",
+        placeholder: "select network filter type",
         multiple: false,
-        width: 200,
+        width: 200
     });
 
     $('#network-type-node-filter').on('select2:select', function (e) {
@@ -196,11 +188,11 @@ $(document).ready(function () {
     });
 
     $('#network-type-service-filter').select2({
-        dropdownCssClass: 'vpkselect2',
-        selectionCssClass: 'vpkselect2',
-        placeholder: 'select network filter type',
+        dropdownCssClass: "vpkselect2",
+        selectionCssClass: "vpkselect2",
+        placeholder: "select network filter type",
         multiple: false,
-        width: 200,
+        width: 200
     });
 
     $('#network-type-service-filter').on('select2:select', function (e) {
@@ -209,134 +201,138 @@ $(document).ready(function () {
     });
 
     $('#network-data-node-filter').select2({
-        dropdownCssClass: 'vpkselect2',
-        selectionCssClass: 'vpkselect2',
-        placeholder: 'select network filter type',
+        dropdownCssClass: "vpkselect2",
+        selectionCssClass: "vpkselect2",
+        placeholder: "select network filter type",
         multiple: true,
-        width: 400,
+        width: 400
     });
 
     $('#network-data-service-filter').select2({
-        dropdownCssClass: 'vpkselect2',
-        selectionCssClass: 'vpkselect2',
-        placeholder: 'select network filter type',
+        dropdownCssClass: "vpkselect2",
+        selectionCssClass: "vpkselect2",
+        placeholder: "select network filter type",
         multiple: true,
-        width: 400,
+        width: 400
     });
+
+
 
     // OwnerRef tab
     $('#ownerRef-kind-filter').select2({
-        dropdownCssClass: 'vpkselect2',
-        selectionCssClass: 'vpkselect2',
-        placeholder: 'select kinds(s), default is ALL kinds',
+        dropdownCssClass: "vpkselect2",
+        selectionCssClass: "vpkselect2",
+        placeholder: "select kinds(s), default is ALL kinds",
         multiple: false,
-        width: 300,
+        width: 300
     });
 
     // Security tab
     $('#security-ns-filter').select2({
-        dropdownCssClass: 'vpkselect2',
-        selectionCssClass: 'vpkselect2',
-        placeholder: 'select namespace',
+        dropdownCssClass: "vpkselect2",
+        selectionCssClass: "vpkselect2",
+        placeholder: "select namespace",
         multiple: false,
-        width: 300,
+        width: 300
     });
     // Security tab - filter
-    $('#secTable').on('click-cell.bs.table', function (field, value, row, $el) {
+    $("#secTable").on("click-cell.bs.table", function (field, value, row, $el) {
         selectedDef = $el.fnum;
         getDefFnum(selectedDef);
     });
     // OwnerRef Links tab
     $('#ownerRef-ns-filter').select2({
-        dropdownCssClass: 'vpkselect2',
-        selectionCssClass: 'vpkselect2',
-        placeholder: 'select namespace',
+        dropdownCssClass: "vpkselect2",
+        selectionCssClass: "vpkselect2",
+        placeholder: "select namespace",
         multiple: false,
-        width: 300,
+        width: 300
     });
     $('#ownerRef-kind-filter').select2({
-        dropdownCssClass: 'vpkselect2',
-        selectionCssClass: 'vpkselect2',
-        placeholder: 'select kinds(s), default is ALL kinds',
+        dropdownCssClass: "vpkselect2",
+        selectionCssClass: "vpkselect2",
+        placeholder: "select kinds(s), default is ALL kinds",
         multiple: false,
-        width: 300,
+        width: 300
     });
     // Event Msgs tab
     $('#events-ns-filter').select2({
-        dropdownCssClass: 'vpkselect2',
-        selectionCssClass: 'vpkselect2',
-        placeholder: 'all-namespaces',
+        dropdownCssClass: "vpkselect2",
+        selectionCssClass: "vpkselect2",
+        placeholder: "all-namespaces",
         multiple: false,
-        width: 300,
+        width: 300
     });
     // Stata View tab
     $('#stats-ns-filter').select2({
-        dropdownCssClass: 'vpkselect2',
-        selectionCssClass: 'vpkselect2',
-        placeholder: 'select namespace(s)',
+        dropdownCssClass: "vpkselect2",
+        selectionCssClass: "vpkselect2",
+        placeholder: "select namespace(s)",
         multiple: false,
-        width: 275,
+        width: 275
     });
 
-    $('#stats-kind-filter').select2({
-        dropdownCssClass: 'vpkselect2',
-        containerCssClass: 'vpkselect2',
-        placeholder: 'select kind',
+    $("#stats-kind-filter").select2({
+        dropdownCssClass: "vpkselect2",
+        containerCssClass: "vpkselect2",
+        placeholder: "select kind",
         multiple: false,
-        width: 275,
+        width: 275
     });
     // Container Images tab
     $('#repository-list').select2({
-        dropdownCssClass: 'vpkselect2',
-        selectionCssClass: 'vpkselect2',
-        placeholder: 'select repository',
+        dropdownCssClass: "vpkselect2",
+        selectionCssClass: "vpkselect2",
+        placeholder: "select repository"
     });
     // Search tab
-    $('#ns-filter').select2({
-        dropdownCssClass: 'vpkselect2',
-        containerCssClass: 'vpkselect2',
-        placeholder: 'select namespace(s)',
+    $("#ns-filter").select2({
+        dropdownCssClass: "vpkselect2",
+        containerCssClass: "vpkselect2",
+        placeholder: "select namespace(s)",
         multiple: true,
-        width: 550,
+        width: 550
     });
-    $('#kind-filter').select2({
-        dropdownCssClass: 'vpkselect2',
-        containerCssClass: 'vpkselect2',
-        placeholder: 'select kind(s)',
+    $("#kind-filter").select2({
+        dropdownCssClass: "vpkselect2",
+        containerCssClass: "vpkselect2",
+        placeholder: "select kind(s)",
         multiple: true,
-        width: 550,
+        width: 550
     });
 
     $('#clusterBG').select2({
-        dropdownCssClass: 'vpkselect2',
-        selectionCssClass: 'vpkselect2',
+        dropdownCssClass: "vpkselect2",
+        selectionCssClass: "vpkselect2"
     });
 
+
+
     //=========================================================================
-    // Watch EVENTS
+    // Watch EVENTS 
     //=========================================================================
-    $('#searchBtn').click(function (e) {
+    $("#searchBtn").click(function (e) {
         e.preventDefault();
         searchObj();
     });
 
-    $('#dirStatMin').on('change', function () {
+    $('#dirStatMin').on("change", function () {
         dirStats();
     });
 
-    $('#dirStatMax').on('change', function () {
+    $('#dirStatMax').on("change", function () {
         dirStats();
     });
 
-    $('#dirStatLabels').on('change', function () {
+    $('#dirStatLabels').on("change", function () {
         dirStats();
     });
 
-    $('#stats-ns-select').on('change', function () {
+    $('#stats-ns-select').on("change", function () {
         dirStats();
     });
 
-    $('#stats-kind-select').on('change', function () {
+    $('#stats-kind-select').on("change", function () {
         dirStats();
     });
 
@@ -344,16 +340,16 @@ $(document).ready(function () {
         filter3DView();
     });
 
-    $('#clusterBG').on('change', function () {
+    $('#clusterBG').on("change", function () {
         let selected = $('#clusterBG').select2('data');
         clusterBack = selected[0].text;
     });
 
-    $('#events-ns-select').on('change', function () {
+    $('#events-ns-select').on("change", function () {
         evtApplyNamespace();
     });
 
-    $('#evtPageToStart').on('change', function () {
+    $('#evtPageToStart').on("change", function () {
         evtApplyNamespace();
     });
 
@@ -369,6 +365,7 @@ $(document).ready(function () {
     $('#timeLapse-bar-select').focusout(function () {
         filterTimeLapseView();
     });
+
 
     // 3d cluster filters
     $('input[name=clusterFilterNodes]').change(function () {
@@ -487,37 +484,38 @@ $(document).ready(function () {
 
     $('[data-toggle="tooltip"]').tooltip();
 
-    $('#cluster_filter').click(function (event) {
-        $('#cluster_filter_box').addClass('active');
+    $("#cluster_filter").click(function (event) {
+        $("#cluster_filter_box").addClass("active")
     });
 
-    $('#schematic_filter').click(function (event) {
+    $("#schematic_filter").click(function (event) {
         schematicFilterShow();
     });
 
-    $('#ownerRef_filter').click(function (event) {
+    $("#ownerRef_filter").click(function (event) {
         ownerRefFilterShow();
     });
 
-    $('#security_filter').click(function (event) {
+    $("#security_filter").click(function (event) {
         securityFilterShow();
     });
 
-    $('#network_filter').click(function (event) {
+    $("#network_filter").click(function (event) {
         openNetworkFilter();
     });
 
-    $('#slideIn_box').click(function (event) {
-        $('#slideIn').addClass('active');
+    $("#slideIn_box").click(function (event) {
+        $("#slideIn").addClass("active");
     });
 
-    $('#slideIn_box').click(function (event) {
-        $('#slideIn').addClass('active');
+    $("#slideIn_box").click(function (event) {
+        $("#slideIn").addClass("active");
     });
 
     // Event handlers for checkbox selection of Workload Schematic filter table: tableWS
     $('#tableWS').on('check.bs.table', function (e, row) {
         schematicCheckedRows.push({ id: row.id, ns: row.ns, pod: row.pod });
+
     });
 
     $('#tableWS').on('uncheck.bs.table', function (e, row) {
@@ -536,6 +534,7 @@ $(document).ready(function () {
             }
         });
     });
+
 
     // Event handlers for checkbox selection of OwnerRef filter table: tableORef
     $('#tableORef').on('check.bs.table', function (e, row) {
@@ -560,18 +559,17 @@ $(document).ready(function () {
     });
 
     // ACE editor linked to html id
-    editor = ace.edit('editor');
+    editor = ace.edit("editor");
 
     // clearDisplay();
     getSelectLists();
     getConfig();
+
 });
 
 function setCurrentTab(currentTab) {
-    // graphvizManager.clearAllGraphs();
-
     // take action based on what tab was shown
-    if (currentTab === 'instructions') {
+    if (currentTab === "instructions") {
         px = 75;
         documentationTabTopic = 'introduction';
         $('#instructions').show();
@@ -580,7 +578,7 @@ function setCurrentTab(currentTab) {
         $('#instructions').hide();
         $('#instructionsHdr').hide();
     }
-    if (currentTab === '#cluster') {
+    if (currentTab === "#cluster") {
         px = 110;
         checkIfDataLoaded();
         documentationTabTopic = 'cluster';
@@ -595,7 +593,7 @@ function setCurrentTab(currentTab) {
         $('#slideIn_box').hide();
         $('#clusterReportView').hide();
     }
-    if (currentTab === '#schematic') {
+    if (currentTab === "#schematic") {
         px = 120;
         checkIfDataLoaded();
         documentationTabTopic = 'schematics';
@@ -607,7 +605,7 @@ function setCurrentTab(currentTab) {
         $('#schematicHdr').hide();
         $('#schematic_filter').hide();
     }
-    if (currentTab === '#storage') {
+    if (currentTab === "#storage") {
         px = 120;
         checkIfDataLoaded();
         documentationTabTopic = 'storage';
@@ -617,7 +615,7 @@ function setCurrentTab(currentTab) {
         $('#storage').hide();
         $('#storageHdr').hide();
     }
-    if (currentTab === '#network') {
+    if (currentTab === "#network") {
         px = 120;
         checkIfDataLoaded();
         documentationTabTopic = 'network';
@@ -631,7 +629,7 @@ function setCurrentTab(currentTab) {
         $('#network_filter').hide();
     }
 
-    if (currentTab === '#security') {
+    if (currentTab === "#security") {
         px = 120;
         checkIfDataLoaded();
         documentationTabTopic = 'security';
@@ -644,7 +642,7 @@ function setCurrentTab(currentTab) {
         $('#security_filter').hide();
     }
 
-    if (currentTab === '#ownerlinks') {
+    if (currentTab === "#ownerlinks") {
         px = 120;
         checkIfDataLoaded();
         documentationTabTopic = 'ownerref';
@@ -654,7 +652,7 @@ function setCurrentTab(currentTab) {
         $('#ownerlinks').hide();
         $('#ownerlinksHdr').hide();
     }
-    if (currentTab === '#evtMsgs') {
+    if (currentTab === "#evtMsgs") {
         px = 120;
         checkIfDataLoaded();
         documentationTabTopic = 'eventmsgs';
@@ -671,7 +669,7 @@ function setCurrentTab(currentTab) {
         $('#evtMsgsHdr').hide();
         $('#evtFilter').hide();
     }
-    if (currentTab === '#stats') {
+    if (currentTab === "#stats") {
         px = 120;
         checkIfDataLoaded();
         documentationTabTopic = 'stats';
@@ -682,13 +680,13 @@ function setCurrentTab(currentTab) {
         openStatsTab();
     } else {
         $('#stats').hide();
-        statsHdr;
+        statsHdr
         $('#statsHdr').hide();
         $('#statsSlideIn').hide();
         $('#stats_filter').hide();
         statsFilterClose();
     }
-    if (currentTab === '#containerImages') {
+    if (currentTab === "#containerImages") {
         px = 120;
         checkIfDataLoaded();
         documentationTabTopic = 'containerimages';
@@ -698,7 +696,7 @@ function setCurrentTab(currentTab) {
         $('#containerImages').hide();
         $('#containerImagesHdr').hide();
     }
-    if (currentTab === '#searchview') {
+    if (currentTab === "#searchview") {
         px = 255;
         checkIfDataLoaded();
         documentationTabTopic = 'search';
@@ -709,25 +707,29 @@ function setCurrentTab(currentTab) {
         $('#searchviewHdr').hide();
     }
 
-    element = document.getElementById('banner');
-    element.style['height'] = px + 'px';
-    element = document.getElementById('viewarea');
+    element = document.getElementById("banner")
+    element.style['height'] = px + "px";
+    element = document.getElementById("viewarea")
     px++;
-    element.style['top'] = px + 'px';
+    element.style['top'] = px + "px";
+
+
 }
+
 
 //----------------------------------------------------------
 function editObj() {
-    $('#viewTypeModal').modal('hide');
+    $("#viewTypeModal").modal('hide');
     socket.emit('getDef', selectedDef);
 }
 
 //...
 socket.on('objectDef', function (data) {
-    // always edit, no longer provide browse
+    // always edit, no longer provide browse 
     editDef(data);
 });
 //==========================================================
+
 
 //----------------------------------------------------------
 function getFileByCid(data, secret) {
@@ -745,11 +747,11 @@ function getFileByCid(data, secret) {
 }
 //...
 socket.on('getFileByCidResults', function (data) {
-    // always edit, no longer provide browse
+    // always edit, no longer provide browse 
     if (getFileIsSecret === true) {
         getDefSec(data);
     } else {
-        getDefFnum(data);
+        getDefFnum(data)
     }
 });
 //==========================================================
@@ -762,7 +764,7 @@ function getDefDecode(def, secret) {
     if (selectedDef.indexOf('undefined') > -1) {
         showMessage('Unable to locate source yaml.', 'fail');
     } else {
-        data = { file: selectedDef, secret: secret };
+        data = { "file": selectedDef, "secret": secret }
         socket.emit('getDecode', data);
     }
 }
@@ -785,13 +787,15 @@ socket.on('getDecodeResult', function (data) {
         html = html + '\nKEY: ' + key + '\n' + '\n' + value + '\n' + '\n';
     }
 
-    $('#decodeName').empty();
+    $("#decodeName").empty();
     //    $("#decodeName").html('<span>' + data.secret + '</span>');
-    $('#decode').empty();
-    $('#decode').html(html);
+    $("#decode").empty();
+    $("#decode").html(html);
     $('#decodeModal').modal('show');
 });
 //==========================================================
+
+
 
 // Get VpK configuration data
 //----------------------------------------------------------
@@ -800,6 +804,7 @@ function getConfig() {
 }
 
 //==========================================================
+
 
 //----------------------------------------------------------
 console.log('loaded vpkMain.js');

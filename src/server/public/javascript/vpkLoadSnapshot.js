@@ -310,6 +310,7 @@ socket.on('getServerDataResult', function (data) {
     evtMinutes = data.eventStats.evtMinutes;
     evtNs = data.eventStats.evtNs;
     evtNsSum = data.eventStats.evtNsSum;
+    
     namespaceFnum = data.namespaceFnum;
     timeline3d = data.timeline;
     networkNodes = data.networkNodes;
