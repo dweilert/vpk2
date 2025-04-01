@@ -7,8 +7,16 @@
     "target": "ES2020",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "skipLibCheck": true,
+    "rootDir": "src",
+    "skipLibCheck": true
   },
-  "include": ["src/server/server.ts", "src/lib/**/*", "src/util", "src/splash/splash.ts", "src/parsers/volume/parseVolume.ts", "src/schematic/html/schematicHtml.ts"],
+  "include": [
+  "src/server/*.*",
+  "src/lib/**/*",
+  "src/util",
+  "src/splash/splash.ts",
+  "src/parsers/volume/parseVolume.ts",
+  "src/schematic/html/schematicHtml.ts"
+],
   "exclude": ["node_modules", "dist", "**.*.test.ts"]
 }

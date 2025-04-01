@@ -858,3 +858,20 @@ tr.border-top td {
     background-color: #cccccc;
     /* Set the width to 400px */
 }
+
+#oRefWrapper {
+    width: 100%;
+    height: 600px; /* or any fixed size */
+    overflow: hidden;
+    border: 1px solid #ccc;
+  }
+  
+  #oRefWrapper svg {
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+  }
+  
+  #oRefWrapper svg:active {
+    cursor: grabbing;
+  }

@@ -277,9 +277,9 @@ socket.on('getServerDataResult', function (data) {
     //
     // Research memory leaks
     //
-    //oRefLinks = data.oRef;
+    oRefLinks = data.oRef;
     // Build an Object with all OwnerRef fnums
-    //buildOwnerRefExists();
+    buildOwnerRefExists();
     //
     storageData = data.stor;
     helmData = data.helm;
@@ -298,18 +298,19 @@ socket.on('getServerDataResult', function (data) {
     storageVolumes = data.storageVolumes;
 
     // Turned OFF - rewrite event time line logic
-    //evtFirstTime = data.eventStats.firstTime;
-    //evtLastTime = data.eventStats.lastTime;
-    //evtTotalDuration = data.eventStats.totalDuration;
+    evtFirstTime = data.eventStats.firstTime;
+    evtLastTime = data.eventStats.lastTime;
+    evtTotalDuration = data.eventStats.totalDuration;
 
-    //evtStatsFirstTime = data.eventStats.firstTime;
-    //evtStatsLastTime = data.eventStats.lastTime;
-    //evtStatsTotalDuration = data.eventStats.totalDuration;
+    evtStatsFirstTime = data.eventStats.firstTime;
+    evtStatsLastTime = data.eventStats.lastTime;
+    evtStatsTotalDuration = data.eventStats.totalDuration;
 
-    //evtMaxMinutes = parseInt(evtTotalDuration / 60);
-    //evtMinutes = data.eventStats.evtMinutes;
-    //evtNs = data.eventStats.evtNs;
-    //evtNsSum = data.eventStats.evtNsSum;
+    evtMaxMinutes = parseInt(evtTotalDuration / 60);
+    evtMinutes = data.eventStats.evtMinutes;
+    evtNs = data.eventStats.evtNs;
+    evtNsSum = data.eventStats.evtNsSum;
+    
     namespaceFnum = data.namespaceFnum;
     timeline3d = data.timeline;
     networkNodes = data.networkNodes;

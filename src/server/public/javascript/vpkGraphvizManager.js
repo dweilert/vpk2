@@ -1,4 +1,6 @@
 // vpkGraphvizManager.js
+console.log('initialize vpkGraphvizManager.js');
+
 (function () {
     const graphvizInstances = {};
     const contextMonitors = {};
@@ -14,38 +16,64 @@
 
         const height = `${Math.min(8000, Math.max(2000, nodeCount * 20))}pt`;
 
-        // Cleanup existing instance
+        // Clear any existing graphviz instance
         try {
             if (graphvizInstances[containerId]) {
                 graphvizInstances[containerId].transition().remove();
             }
         } catch (e) {
-            // Ignore on first run
+            // No-op on first load
         }
 
-        // Replace content with a fresh div
-        wrapper.innerHTML = `<div id="${containerId}-viz" style="text-align: center;"></div>`;
+        // // Clear and rebuild wrapper container
+        // wrapper.innerHTML = `
+        //     <div id="${containerId}-viz" style="width: 100%; height: 100%; text-align: center;"></div>
+        // `;
 
-        // Create and render the graph
-        const viz = d3
-            .select(`#${containerId}-viz`)
+        wrapper.innerHTML = '<div id="' + containerId + '-viz" style="width: 100%; height: 100%; text-align: center;"></div>';
+
+        const graphvizEl = d3.select(`#${containerId}-viz`);
+
+        const viz = graphvizEl
             .graphviz({ useWorker: false })
-            .zoom(zoom)
+            .zoom(false) // we'll handle zoom externally
             .height(height)
             .renderDot(dotData)
             .on('end', () => {
-                if (typeof onRenderEnd === 'function') {
-                    onRenderEnd();
-                }
-                if (trackContext && !contextMonitors[containerId]) {
-                    const el = document.getElementById(`${containerId}-viz`);
-                    if (el) {
-                        el.addEventListener('webglcontextlost', function (e) {
-                            console.warn(`🚨 WebGL context lost in ${containerId}-viz`, e);
-                        });
-                        contextMonitors[containerId] = true;
+                setTimeout(() => {
+                    if (zoom) {
+                        const svg = graphvizEl.select('svg');
+                        const g = svg.select('g');
+
+                        if (!svg.empty() && !g.empty()) {
+                            svg.call(
+                                d3
+                                    .zoom()
+                                    .scaleExtent([0.1, 10]) // min/max zoom
+                                    .on('zoom', (event) => {
+                                        g.attr('transform', event.transform);
+                                    }),
+                            );
+                        } else {
+                            console.warn(`Zoom setup failed — SVG or G not found inside #${containerId}-viz`);
+                        }
                     }
-                }
+
+                    if (typeof onRenderEnd === 'function') {
+                        onRenderEnd();
+                    }
+
+                    // Optional: WebGL context monitor
+                    if (trackContext && !contextMonitors[containerId]) {
+                        const el = document.getElementById(`${containerId}-viz`);
+                        if (el) {
+                            el.addEventListener('webglcontextlost', function (e) {
+                                console.warn(`🚨 WebGL context lost in ${containerId}-viz`, e);
+                            });
+                            contextMonitors[containerId] = true;
+                        }
+                    }
+                }, 100); // Delay ensures SVG is mounted before zoom is applied
             });
 
         graphvizInstances[containerId] = viz;
@@ -61,9 +89,12 @@
         });
     }
 
-    // Expose globally
+    // Expose API globally
     window.graphvizManager = {
         renderGraph,
         clearAllGraphs,
     };
 })();
+
+//----------------------------------------------------------
+console.log('loaded vpkGraphvizManager.js');

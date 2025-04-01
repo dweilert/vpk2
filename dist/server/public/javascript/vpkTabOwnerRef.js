@@ -338,84 +338,42 @@ function showNodeFnumORef(node) {
     }
 }
 
-// //-------------------------------------------------------------------------
-// // create the d3/graphviz graph
-// function createGraphORef(clusterORef) {
-//     try {
-//         let height = '150000pt';
-//         // clear the div that contains the graph
-//         $('#oRefWrapper').html('');
-//         if (clusterORef === true) {
-//             $('#oRefWrapper').html(
-//                 '<div class="vpkfont vpk-rtn-bg mt-1 mb-2 ml-2">' +
-//                     '<button type="button" class="mt-1 mb-1 btn btn-sm btn-secondary vpkButtons ml-2 px-2" ' +
-//                     " onclick=\"returnToWhereTab('Cluster','oRefWrapper')\">Return</button>" +
-//                     '<span class="px-2 vpkfont">to Cluster tab</span></div>' +
-//                     '<div id="oRefViz" style="text-align: center;"></div>',
-//             );
-//         } else {
-//             $('#oRefWrapper').html('<div id="oRefViz" style="text-align: center;"></div>');
-//         }
-//         let viz = d3.select('#oRefViz');
-//         viz.graphviz({ useWorker: false }).zoom(true).height(height).renderDot(graphVizDataORef).on('end', addGraphvizOnClickORef);
-//     } catch (err) {
-//         $('#statusProcessing').hide();
-//         console.log(`createGraphORef error: message: ${err.message}`);
-//         console.log(`Error stack: ${err.stack}`);
-//     }
 
-//     // Check to determine if this a single OwnerRef fron Cluster View
-//     if (clusterORef === true) {
-//         openTabOwnerRef();
-//     }
-// }
-
+//-------------------------------------------------------------------------
+// create the d3/graphviz graph with zoom enabled
 function createGraphORef(clusterORef) {
     try {
         const wrapper = $('#oRefWrapper');
-        const height = '5000pt'; // previously 150000pt — much safer now
-        const vizId = 'oRefViz';
+        wrapper.empty(); // Clear old content
 
-        // Clean the wrapper and remove old graph content
-        wrapper.empty();
-
-        // Optional: If you want to fully dispose of the previous graphviz instance
-        try {
-            d3.select(`#${vizId}`).graphviz().transition().remove();
-        } catch (e) {
-            // No-op: silently ignore if not already instantiated
-        }
-
-        // Rebuild the container
+        // If coming from the cluster tab, show the Return button
         if (clusterORef === true) {
-            wrapper.html(
+            wrapper.append(
                 '<div class="vpkfont vpk-rtn-bg mt-1 mb-2 ml-2">' +
                 '<button type="button" class="mt-1 mb-1 btn btn-sm btn-secondary vpkButtons ml-2 px-2" ' +
                 " onclick=\"returnToWhereTab('Cluster','oRefWrapper')\">Return</button>" +
-                '<span class="px-2 vpkfont">to Cluster tab</span></div>' +
-                `<div id="${vizId}" style="text-align: center;"></div>`
+                '<span class="px-2 vpkfont">to Cluster tab</span></div>'
             );
-        } else {
-            wrapper.html(`<div id="${vizId}" style="text-align: center;"></div>`);
         }
 
-        // Render new graph
-        const viz = d3.select(`#${vizId}`);
-        viz.graphviz({ useWorker: false })
-            .zoom(false) // set to true if you want zooming
-            .height(height)
-            .renderDot(graphVizDataORef)
-            .on('end', addGraphvizOnClickORef);
+        // Render the graph with zoom and pan support
+        graphvizManager.renderGraph('oRefWrapper', graphVizDataORef, oRefData.length, {
+            zoom: true,
+            trackContext: true,
+            onRenderEnd: addGraphvizOnClickORef,
+        });
+
+        if (clusterORef === true) {
+            openTabOwnerRef();
+        }
     } catch (err) {
         $('#statusProcessing').hide();
         console.error(`createGraphORef error: ${err.message}`);
         console.error(err.stack);
     }
-
-    if (clusterORef === true) {
-        openTabOwnerRef();
-    }
 }
+
+
 
 
 //-------------------------------------------------------------------------
