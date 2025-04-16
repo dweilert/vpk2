@@ -7,7 +7,7 @@ import { logMessage } from '../utils/logging.js';
 import { showTimeDiff } from '../utils/showtimedif.js';
 import { getPTime } from '../utils/getptime.js';
 import { getKubeInfo } from '../kube/getKubeInfo.js';
-import { returnData } from './retrunData.js';
+import { returnData } from './returnData.js';
 
 export async function getSnapshot(data: any, kga: any[], client: any, dynDir: any) {
     let startT = getPTime();

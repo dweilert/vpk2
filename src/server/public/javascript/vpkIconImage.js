@@ -21,11 +21,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // Find associated Icon image
 //----------------------------------------------------------
 
-
 function checkImage(kind, api) {
     let image;
     if (kind === 'k8') {
-        image = 'k8.svg'
+        image = 'k8.svg';
     } else if (kind === 'API' || kind === 'Api' || kind === 'APIService') {
         image = 'k8/api.svg';
     } else if (kind === 'Alertmanager') {
@@ -141,7 +140,7 @@ function checkImage(kind, api) {
     } else if (kind === 'ValidatingWebhookConfiguration') {
         image = 'k8/k8.svg';
     } else if (kind === 'VolumeAttachment') {
-        image = 'k8/k8.svg';
+        image = 'k8/va.svg';
     } else if (kind === 'Unknown') {
         image = 'other/unk.svg';
     } else {
@@ -189,7 +188,6 @@ function checkImage(kind, api) {
 
     return image;
 }
-
 
 //----------------------------------------------------------
 console.log('loaded vpkIconImage.js');

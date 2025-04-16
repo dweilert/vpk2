@@ -56,6 +56,7 @@ export function volumeAttachmentParse(kind: string, name: string, obj: any, fnum
             attacher: attacher,
             nodeName: nodeName,
             pvName: pvName,
+            pvFnum: 0, // Will be updated in afterParse
         });
     } catch (err) {
         logMessage('VAT001 - Error processing file fnum: ' + fnum + ' kind: ' + kind + ' message: ' + err);

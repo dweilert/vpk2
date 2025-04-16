@@ -124,16 +124,13 @@ function getDefFnum(data) {
     editObj();
 }
 
-
-
 function partArray(type, data) {
     let fn;
     try {
         if (type === 'Secret') {
-            multiList(type, data)
-        }
+            multiList(type, data);
         if (data.length > 1) {
-            multiList(type, data)
+            multiList(type, data);
         } else {
             if (typeof data[0].source !== 'undefined') {
                 selectedDef = data[0].source
@@ -259,9 +256,9 @@ function multiList(type, data) {
             use = '';
         }
         html = html
-            + '<div class="multiList">'
-            + '<button type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1"'
-            + 'onclick="' + getDef + '(\'' + ref + '\')">' + type + '</button>';
+        + '<div class="multiList">'
+        + '<button type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1"'
+        + 'onclick="' + getDef + '(\'' + ref + '\')">' + type + '</button>';
 
         if (type === 'Secret') {
             html = html

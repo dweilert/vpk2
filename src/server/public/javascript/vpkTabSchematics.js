@@ -29,10 +29,9 @@ let schematicCheckedRows = [];
 let schematicData;
 let schematicDataOrig;
 let schematicOneDiv = false;
-let singleSchematicData = "";
+let singleSchematicData = '';
 let schematicClusterView = false;
-let svgWhere = "";
-
+let svgWhere = '';
 
 //----------------------------------------------------------
 /* 
@@ -44,18 +43,16 @@ function showSchematic(ns, podId, where) {
     schematicClusterView = true;
     schematicWKeys = [];
 
-    schematicWKeys.push(
-        {
-            'state': '',
-            'ns': ns,
-            'pod': 'Cluster view pod',
-            'id': '0'
-        }
-    )
+    schematicWKeys.push({
+        state: '',
+        ns: ns,
+        pod: 'Cluster view pod',
+        id: '0',
+    });
 
     // build the Workload Schematic filter table
-    $("#tableWS").bootstrapTable('load', schematicWKeys)
-    $("#tableWS").bootstrapTable('hideColumn', 'id');
+    $('#tableWS').bootstrapTable('load', schematicWKeys);
+    $('#tableWS').bootstrapTable('hideColumn', 'id');
 
     openTabSchecmatics();
     getSchematic(ns, podId);
@@ -65,14 +62,13 @@ function openTabSchecmatics() {
     $('[href="#schematic"]').tab('show');
 }
 
-
 function applySchematicFilter() {
-    $("#schematicFilterModal").modal('hide')
+    $('#schematicFilterModal').modal('hide');
     formatFilterSVG();
 }
 
 function schematicFilterShow() {
-    $("#schematicFilterModal").modal('show')
+    $('#schematicFilterModal').modal('show');
 }
 
 // Build and send the WebSocket request to the server
@@ -81,12 +77,12 @@ function getSchematic(ns, pod) {
         svgWhere = pod;
         schematicClusterView = true;
     } else {
-        svgWhere = ""
+        svgWhere = '';
         schematicClusterView = false;
     }
 
-    let namespaces = "";
-    if (svgWhere === "") {
+    let namespaces = '';
+    if (svgWhere === '') {
         let tmp;
         /* 
             Get the namespaces that have been selected in the drop down
@@ -101,12 +97,12 @@ function getSchematic(ns, pod) {
             } else {
                 namespaces = namespaces + ':' + tmp;
             }
-        };
+        }
         if (namespaces === '') {
             namespaces = ':all-namespaces:';
         }
     } else {
-        namespaces = ":" + ns;
+        namespaces = ':' + ns;
     }
     socket.emit('getSchematicSvg', namespaces);
 }
@@ -115,7 +111,7 @@ function getSchematic(ns, pod) {
 // Handle the WebSocket respaonse
 socket.on('schematicGetSvgResult', function (data) {
     // Reset variables and save the data
-    // so it can be used in flitering 
+    // so it can be used in flitering
 
     schematicKeys = {};
     schematicWKeys = [];
@@ -124,13 +120,13 @@ socket.on('schematicGetSvgResult', function (data) {
     schematicData = data.data;
     //schematicDataOrig = data.data;
 
-    if (svgWhere === "") {
+    if (svgWhere === '') {
         schematicClusterView = false;
         let html = formatSchematicSVG(data);
         // Build the filter modal table and html
-        buildSchematicFilterTable(data)
+        buildSchematicFilterTable(data);
 
-        $("#schematicDetail").html(html);
+        $('#schematicDetail').html(html);
 
         // un-collaspe if there is only one div
         if (schematicOneDiv === true) {
@@ -139,7 +135,7 @@ socket.on('schematicGetSvgResult', function (data) {
     } else {
         schematicClusterView = true;
         singleSchematicData = formatSingleSVG(data.data, svgWhere);
-        $("#schematicDetail").html(singleSchematicData)
+        $('#schematicDetail').html(singleSchematicData);
     }
 });
 
@@ -148,10 +144,10 @@ function formatSchematicSVG(data) {
     if (schematicClusterView === true) {
         return;
     }
-    let = newData = data.data;
+    let newData = data.data;
     let nsKeys = Object.keys(newData);
     let podKeys;
-    let html = "";
+    let html = '';
     let podsFound;
     let collNum = 0;
 
@@ -164,20 +160,28 @@ function formatSchematicSVG(data) {
                 continue;
             } else {
                 podsFound = true;
-                collNum++
+                collNum++;
                 if (p === 0) {
-                    html = html +
-                        '<div class="breakBar"><button type="button" '
-                        + ' class="btn btn-primary btn-sm vpkButtons pl-4 pr-4" data-toggle="collapse" data-target="#collid-'
-                        + collNum + '">' + nsKeys[i] + '</button>'
-                        + '<hr></div>'
-                        + '<div id="collid-' + collNum + '" class="collapse">'
-                        + '<div class="header-right">'
-                        + '<a href="javascript:printDiv(\'collid-' + collNum + '\')">'
-                        + '<i class="fas fa-print mr-3 vpkblue vpkfont-lg"></i>'
-                        + '</a>'
-                        + '</div>'
-                        + newData[nsKeys[i]][podKeys[p]];
+                    html =
+                        html +
+                        '<div class="breakBar"><button type="button" ' +
+                        ' class="btn btn-primary btn-sm vpkButtons pl-4 pr-4" data-toggle="collapse" data-target="#collid-' +
+                        collNum +
+                        '">' +
+                        nsKeys[i] +
+                        '</button>' +
+                        '<hr></div>' +
+                        '<div id="collid-' +
+                        collNum +
+                        '" class="collapse">' +
+                        '<div class="header-right">' +
+                        '<a href="javascript:printDiv(\'collid-' +
+                        collNum +
+                        '\')">' +
+                        '<i class="fas fa-print mr-3 vpkblue vpkfont-lg"></i>' +
+                        '</a>' +
+                        '</div>' +
+                        newData[nsKeys[i]][podKeys[p]];
                 } else {
                     html = html + newData[nsKeys[i]][podKeys[p]];
                 }
@@ -189,7 +193,7 @@ function formatSchematicSVG(data) {
         }
     }
 
-    // Set flag that indicates the collaspible should be 
+    // Set flag that indicates the collaspible should be
     // opened if only on namespace
     if (nsKeys.length === 1) {
         schematicOneDiv = true;
@@ -199,12 +203,11 @@ function formatSchematicSVG(data) {
     return html;
 }
 
-
-// Build the data that will populate the workload schematic 
+// Build the data that will populate the workload schematic
 // filter modal.
 function buildSchematicFilterTable(data) {
     schematicWKeys = [];
-    let = filterData = data.data;
+    let filterData = data.data;
     let nsKeys = Object.keys(filterData);
     let podKeys;
 
@@ -216,23 +219,21 @@ function buildSchematicFilterTable(data) {
             } else {
                 // Search the SVG data and build the workload pod keys
                 let psvg = filterData[nsKeys[i]][podKeys[p]];
-                let wp = psvg.indexOf('Pod: ')
+                let wp = psvg.indexOf('Pod: ');
                 if (wp > -1) {
-                    let podName = psvg.substring(wp)
+                    let podName = psvg.substring(wp);
                     let ewp = podName.indexOf('</text>');
                     //let wpKey = nsKeys[i] + '::' + podName.substring(5, ewp) + '::' + podKeys[p];
-                    schematicWKeys.push(
-                        {
-                            'state': '',
-                            'ns': nsKeys[i],
-                            'pod': podName.substring(5, ewp),
-                            'id': podKeys[p]
-                        }
-                    )
+                    schematicWKeys.push({
+                        state: '',
+                        ns: nsKeys[i],
+                        pod: podName.substring(5, ewp),
+                        id: podKeys[p],
+                    });
                 }
                 // build the table
-                $("#tableWS").bootstrapTable('load', schematicWKeys)
-                $("#tableWS").bootstrapTable('hideColumn', 'id');
+                $('#tableWS').bootstrapTable('load', schematicWKeys);
+                $('#tableWS').bootstrapTable('hideColumn', 'id');
             }
         }
     }
@@ -241,7 +242,7 @@ function buildSchematicFilterTable(data) {
 // Build display of requested Workloads via filter modal
 function formatFilterSVG() {
     if (schematicClusterView === true) {
-        $("#schematicFilterModal").modal('hide')
+        $('#schematicFilterModal').modal('hide');
         return;
     }
     let nsCount = 0;
@@ -253,16 +254,16 @@ function formatFilterSVG() {
             id = schematicCheckedRows[i].id;
             ns = schematicCheckedRows[i].ns;
             if (typeof newData2[ns] === 'undefined') {
-                newData2[ns] = {}
+                newData2[ns] = {};
                 nsCount++;
             }
             let tmp = schematicData[ns][id];
             newData2[ns][id] = tmp;
         }
     }
-    let html = formatSchematicSVG({ 'data': newData2 });
-    $("#schematicFilterModal").modal('hide')
-    $("#schematicDetail").html(html)
+    let html = formatSchematicSVG({ data: newData2 });
+    $('#schematicFilterModal').modal('hide');
+    $('#schematicDetail').html(html);
 
     // upen collaspe if there is only one div
     if (nsCount === 1) {
@@ -271,11 +272,11 @@ function formatFilterSVG() {
     }
 }
 
-// Clear the selected filter setting in the filter UI 
+// Clear the selected filter setting in the filter UI
 // and populate the tab UI with all the returned data
 function clearAllSchematicFilters() {
     if (schematicClusterView === true) {
-        $("#schematicFilterModal").modal('hide')
+        $('#schematicFilterModal').modal('hide');
         return;
     }
     if (schematicWKeys.length === 0) {
@@ -286,9 +287,9 @@ function clearAllSchematicFilters() {
     for (let i = 0; i < schematicWKeys.length; i++) {
         schematicWKeys[i].state = false;
     }
-    let html = formatSchematicSVG({ 'data': schematicData });
-    $("#schematicFilterModal").modal('hide')
-    $("#schematicDetail").html(html)
+    let html = formatSchematicSVG({ data: schematicData });
+    $('#schematicFilterModal').modal('hide');
+    $('#schematicDetail').html(html);
 
     let countKeys = Object.keys(schematicData);
     if (countKeys.length === 1) {
@@ -297,7 +298,7 @@ function clearAllSchematicFilters() {
     }
 }
 
-// Show a single schematic 
+// Show a single schematic
 function formatSingleSVG(data, pod) {
     schematicClusterView === true;
     schematicOneDiv = true;
@@ -311,18 +312,22 @@ function formatSingleSVG(data, pod) {
                 continue;
             } else {
                 $('#schematicReturn').html(
-                    '<div class="vpkfont vpkblue vpk-rtn-bg mt-1 mb-2 ml-2">'
-                    + '<button type="button" class="mt-1 mb-1 btn btn-sm btn-secondary vpkButtons ml-2 px-2" '
-                    + ' onclick="returnToWhereTab(\'' + returnWhere + '\',\'schematicReturn\')">Return</button>'
-                    + '<span class="px-1">to</span>' + returnWhere + '<span class="px-1">tab</span>'
-                    + '</div>')
+                    '<div class="vpkfont vpkblue vpk-rtn-bg mt-1 mb-2 ml-2">' +
+                        '<button type="button" class="mt-1 mb-1 btn btn-sm btn-secondary vpkButtons ml-2 px-2" ' +
+                        ' onclick="returnToWhereTab(\'' +
+                        returnWhere +
+                        "','schematicReturn')\">Return</button>" +
+                        '<span class="px-1">to</span>' +
+                        returnWhere +
+                        '<span class="px-1">tab</span>' +
+                        '</div>',
+                );
                 return data[nsKeys[i]][podKeys[p]];
             }
         }
     }
     return '';
 }
-
 
 //----------------------------------------------------------
 console.log('loaded vpkTabSchematics.js');

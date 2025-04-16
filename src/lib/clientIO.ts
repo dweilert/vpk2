@@ -433,6 +433,7 @@ export default {
                     networkNodes: vpk.networkNodes,
                     networkServiceToPods: vpk.networkServicesToPod,
                     stats: vpk.clusterSummary,
+                    volumeAttachments: vpk.volumeAttachment,
                 };
 
                 logMessage('CIO095 - Emit: getServerDataResult');

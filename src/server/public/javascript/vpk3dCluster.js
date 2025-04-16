@@ -177,14 +177,13 @@ function createScene() {
     skybox = BABYLON.MeshBuilder.CreateBox('skyBox', { size: 1000.0 }, scene);
     skyboxMaterial = new BABYLON.StandardMaterial('skyBox', scene);
     skyboxMaterial.backFaceCulling = false;
-    // skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/stars", scene);
     skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture('textures/stars', scene, [
-        '_px.png',
-        '_py.png',
-        '_pz.png',
-        '_nx.png',
-        '_ny.png',
-        '_nz.png',
+        '_px.jpg',
+        '_py.jpg',
+        '_pz.jpg',
+        '_nx.jpg',
+        '_ny.jpg',
+        '_nz.jpg',
     ]);
     skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
     skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
@@ -250,6 +249,9 @@ function createScene() {
 
     const serviceColor = new BABYLON.StandardMaterial('', scene);
     serviceColor.diffuseColor = new BABYLON.Color3.FromHexString('#80bfbf');
+
+    const vaColor = new BABYLON.StandardMaterial('', scene);
+    vaColor.diffuseColor = new BABYLON.Color3.FromHexString('#900c3f');
 
     const pvColor = new BABYLON.StandardMaterial('', scene);
     pvColor.diffuseColor = new BABYLON.Color3.FromHexString('#ba8759');
@@ -933,11 +935,22 @@ function createScene() {
 
                 key = cluster.nodes[node].pods[cCnt].pvc[0].scName;
                 if (key > '') {
+                    let pvNameText = cluster.nodes[node].pods[cCnt].pvc[0].pvName;
                     let pvcFnum = cluster.nodes[node].pods[cCnt].pvc[0].fnum;
                     let pvFnum = cluster.nodes[node].pods[cCnt].pvc[0].pvFnum;
                     let foundKey = cluster.nodes[node].pods[cCnt].pvc[0].name + '::' + cluster.nodes[node].pods[cCnt].pvc[0].ns;
                     let found;
-                    found = buildStorageObj(podCords, pvcName, cluster.nodes[node].pods[cCnt].ns, pvName, podFnum, pvcFnum, pvFnum, foundKey);
+                    found = buildStorageObj(
+                        podCords,
+                        pvcName,
+                        cluster.nodes[node].pods[cCnt].ns,
+                        pvName,
+                        podFnum,
+                        pvcFnum,
+                        pvFnum,
+                        foundKey,
+                        pvNameText,
+                    );
 
                     // save x,y,z for use with storage class if the PV was built
                     if (found) {
@@ -1157,7 +1170,7 @@ function createScene() {
     //==============================================
     // build a cylinder for the PVC and PV
 
-    function buildStorageObj(pCords, pvcName, ns, pvName, pFnum, pvcFnum, pvFnum, foundKey) {
+    function buildStorageObj(pCords, pvcName, ns, pvName, pFnum, pvcFnum, pvFnum, foundKey, pvNameText) {
         if (typeof foundPVC[foundKey].cords === 'undefined') {
             // define the PVC
             buildCylinder(pCords.x, pCords.y - 2.5, pCords.z, 0.4, 0.25, 16, pvcColor, ns, 'PVC', pFnum, pvcName, '', pvcFnum);
@@ -1170,6 +1183,52 @@ function createScene() {
             buildSlice(pCords.x, pCords.y - 5, pCords.z, pvFnum, 'n');
             // Connect PVC to PV
             buildLine(pCords.x, pCords.y - 3.75, pCords.z, 2.25, 'PVLine', ns, pFnum, pvFnum);
+
+            if (typeof volAttach[pvNameText] !== 'undefined') {
+                let vaName;
+                let vaFnum;
+                let vaInner;
+                let yAdj = 0;
+                let yBase = 5.0;
+                let yNow = 0;
+                let yLine = 0;
+                for (let i = 0; i < volAttach[pvNameText].length; i++) {
+                    vaName = volAttach[pvNameText][i].name;
+                    vaFnum = volAttach[pvNameText][i].fnum;
+                    yAdj = yAdj + 0.5;
+                    yNow = yBase + yAdj;
+                    vaInner =
+                        '<div class="vpkfont vpkblue ml-1">' +
+                        '<div id="sliceKey">' +
+                        vaFnum +
+                        //'.' +
+                        //c +
+                        '</div>' +
+                        '<a href="javascript:getDefFnum(\'' +
+                        vaFnum +
+                        '\')">' +
+                        '<img src="images/k8/va.svg" class="icon"></a>' +
+                        '<span class="pl-2 pb-2 vpkfont-sm">(Press to view resource)' +
+                        '</span>' +
+                        '<br>' +
+                        '<span class="vpkfont-slidein"><b>VolumeAttachment</b>' +
+                        '<br><hr class="hrLine">' +
+                        '<span><b>Name : </b><span class="pl-2">' +
+                        vaName +
+                        '</span></span>' +
+                        '</span>' +
+                        '<br>' +
+                        checkOwnerRef(vaFnum, 'cluster-level', 'VA') +
+                        '</div>';
+
+                    buildSphere(pCords.x, pCords.y - yNow, pCords.z, 0.175, 32, vaColor, ns, 'VA', pFnum, vaInner, vaFnum);
+                    buildSlice(pCords.x, pCords.y - yNow, pCords.z, vaFnum, 'n');
+                    // Add connection line between the VolumeAttachment and the PV
+                    yLine = yNow - 0.25;
+                    buildLine(pCords.x, pCords.y - yLine, pCords.z, 0.5, 'VALine', ns, pFnum, vaFnum);
+                }
+            }
+
             //Update the object
             foundPVC[foundKey].cords = pCords;
             return true; // Indicate the objects are new
@@ -1349,6 +1408,64 @@ function createScene() {
                 let upStick = BABYLON.MeshBuilder.CreateTube(scFnum, { path: path, radius: 0.0075, sideOrientation: BABYLON.Mesh.DOUBLESIDE }, scene);
                 upStick.material = csiStickColor;
                 addMesh(upStick, 'ClusterLevel', 'csiStorageLine', scFnum, '');
+
+                // CSIDriver shpere
+                y = 1.5;
+                // let fnum = 600 + index;
+                let sphere1 = BABYLON.MeshBuilder.CreateSphere('CSIDriver', { diameter: 0.25, segments: 32 }, scene);
+                sphere1.position.x = tX;
+                sphere1.position.y = -7;
+                sphere1.position.z = tZ;
+                sphere1.material = csiStorageWallColor;
+                //buildSlice(tX, -7, tZ, fnum.toString(), 'n');
+
+                let csiFnum = 0;
+                for (let i = 0; i < foundCSINamesFnum.length; i++) {
+                    if (foundCSINamesFnum[i].startsWith(scData.prov)) {
+                        let parts = foundCSINamesFnum[i].split('::');
+                        csiFnum = parts[1];
+                        break;
+                    }
+                }
+
+                buildSlice(tX, -7, tZ, csiFnum.toString(), 'n');
+
+                let csidriverInner =
+                    '<div class="vpkfont vpkblue ml-1">' +
+                    '<div id="sliceKey">' +
+                    csiFnum +
+                    //'.' +
+                    // c +
+                    '</div>' +
+                    '<a href="javascript:getDefFnum(\'' +
+                    csiFnum +
+                    '\')">' +
+                    '<img src="images/k8/csidriver.svg" class="icon"></a>' +
+                    '<span class="pl-2 pb-2 vpkfont-sm">(Press to view resource)' +
+                    '</span>' +
+                    '<br>' +
+                    '<span class="vpkfont-slidein"><b>CSIDriver <br>(Container Storage Interface Driver)</b>' +
+                    '<br><hr class="hrLine">' +
+                    '<span><b>Name : </b><span class="pl-2">' +
+                    scData.prov +
+                    '</span></span>' +
+                    '</span>' +
+                    '<br>' +
+                    checkOwnerRef(csiFnum, 'cluster-level', 'CSIDriver') +
+                    '</div>';
+
+                sphere1.actionManager = new BABYLON.ActionManager(scene);
+                sphere1.actionManager.registerAction(
+                    new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, function () {
+                        document.getElementById('resourceProps').innerHTML = csidriverInner;
+                        if ($('#clusterFilterSound').prop('checked')) {
+                            clickSound.play();
+                        }
+                        showRing();
+                    }),
+                );
+
+                addMesh(sphere1, 'ClusterLevel', 'CSIDriver', csiFnum, '');
             }
             // connection lines to PVCs
             if (typeof scData.pv[0] !== 'undefined') {

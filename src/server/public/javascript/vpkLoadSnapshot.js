@@ -25,6 +25,7 @@ let volumeCountsType;
 let volumeCountsNode;
 let volumeCountsNS;
 let volumeCountsPod;
+let volumeAttachments;
 let storageVolumes;
 let evtFirstTime = 0;
 let evtLastTime = 0;
@@ -310,13 +311,13 @@ socket.on('getServerDataResult', function (data) {
     evtMinutes = data.eventStats.evtMinutes;
     evtNs = data.eventStats.evtNs;
     evtNsSum = data.eventStats.evtNsSum;
-    
     namespaceFnum = data.namespaceFnum;
     timeline3d = data.timeline;
     networkNodes = data.networkNodes;
     networkServicesToPods = data.networkServiceToPods;
     helmManaged = data.helm;
     vpkstats = data.stats;
+    volumeAttachments = data.volumeAttachments;
 
     if (typeof data.filters !== 'undefined') {
         clusterFilters = data.filters;

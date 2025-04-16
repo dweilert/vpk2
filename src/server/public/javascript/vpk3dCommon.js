@@ -21,10 +21,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // common variables for 3d cluster
 //----------------------------------------------------------
 
-let canvas = document.getElementById("clusterCanvas");
+let canvas = document.getElementById('clusterCanvas');
 var engine = null;
 var camera = null;
-var createDefaultEngine
+var createDefaultEngine;
 var scene = null;
 var sceneToRender = null;
 
@@ -32,13 +32,14 @@ let foundServices = {};
 let foundNSNames = [];
 let foundStorageClasses = {};
 let foundCSINames = [];
+let foundCSINamesFnum = [];
 let foundPVC = {};
 let foundPVs = {};
 let cluster = {};
-let meshArray = [];             // Array of all meshes
-let podArray = [];              // Array of displayed pods using fnum
-let sliceArray = [];            // Array of slice rings 
-let resourceArray = [];         // Array of memory and cpu info 
+let meshArray = []; // Array of all meshes
+let podArray = []; // Array of displayed pods using fnum
+let sliceArray = []; // Array of slice rings
+let resourceArray = []; // Array of memory and cpu info
 let controlPlaneArray = [];
 let mstCount = 0;
 let nodeSpace = {};
@@ -56,6 +57,7 @@ let clusterRescExtend = [];
 let clusterRescCluster = [];
 let clusterRescOther = [];
 let clusterRescThirdPArty = [];
+let volAttach = {};
 
 let configMapsFound = false;
 let secretsFound = false;
@@ -63,6 +65,7 @@ let secretsFound = false;
 let ingressArray = [];
 
 let rescWorkload = [
+    'Binding',
     'ControllerRevision',
     'HorizontialPodAutoscaler',
     'PriorityClass',
@@ -71,19 +74,12 @@ let rescWorkload = [
     'ReplicaSet',
     'ResourceClaim',
     'ResourceClaimTemplate',
-    'ResourceClass'
-]
+    'ResourceClass',
+];
 
-let rescService = [
+let rescService = [];
 
-]
-
-let rescConfigStorage = [
-    'ConfigMap',
-    'Secret',
-    'Volume',
-    'VolumeAttachment'
-]
+let rescConfigStorage = ['ConfigMap', 'Secret', 'Volume', 'VolumeAttributesClass', 'StorageVersionMigration', 'CSIStorageCapacity'];
 
 let rescAuthentication = [
     'ServiceAccount',
@@ -91,8 +87,9 @@ let rescAuthentication = [
     'TokenReview',
     'CertificateSigningRequest',
     'CertificateTrustBundle',
-    'SelfSubjectReview'
-]
+    'SelfSubjectReview',
+];
+
 let rescAuthorization = [
     'LocalSubjectAccessReview',
     'SelfSubjectAccessReview',
@@ -101,37 +98,44 @@ let rescAuthorization = [
     'ClusterRole',
     'ClusterRoleBinding',
     'Role',
-    'RoleBinding'
-]
+    'RoleBinding',
+];
+
 let rescPolicy = [
+    'FlowSchema',
     'LimitRange',
     'ResourceQuota',
     'NetworkPolicy',
     'PodDistributionBudget',
-    'IPAddress'
-]
+    'PriorityLevelConfiguration',
+    'ValidatingAdmissionPolicy',
+    'ValidatingAdmissionPolicyBinding',
+];
+
 let rescExtend = [
     'CustomResourceDefinition',
+    'DeviceClass',
     'MutatingWebhookConfiguration',
     'ValidatingWebhookConfiguration',
-    'ValidatingAdmissionPolicy'
-]
+    'ValidatingAdmissionPolicy',
+];
+
 let rescCluster = [
-    'Namespace',
-    'Event',
     'APIService',
+    'ComponentStatus',
+    'Event',
+    'IPAddress',
     'Lease',
+    'LeaseCandidate',
+    'Namespace',
     'RuntimeClass',
     'FlowSchema',
     'PriorityLevelConfiguration',
-    'Binding',
     'ClusterCIDR',
-    'VolumeSnapshotClass'
-]
+    'VolumeSnapshotClass',
+];
 
-let rescOther = [
-    'ValidatingAdmissionPolicyBinding'
-]
+let rescOther = ['ValidatingAdmissionPolicyBinding'];
 
 let rescSkip = [
     'ComponentStatus',
@@ -152,11 +156,11 @@ let rescSkip = [
     'PodTemplate',
     'Service',
     'StorageClass',
-]
-
+    'VolumeAttachment',
+];
 
 let networkLinks = {};
-let pvLinks = [];              // Array of PVs that are biult
+let pvLinks = []; // Array of PVs that are biult
 let pvcLinks = {};
 let pvcBuild = {};
 let pvToVolAttLinks = {};
@@ -164,7 +168,7 @@ let maxPodCount = 0;
 let maxNodeCount = 0;
 // statistics on number of located resources for each node
 let nodeStats = {};
-let slice = "x";
+let slice = 'x';
 
 let bn = [
     1024, //Ki
@@ -174,20 +178,10 @@ let bn = [
     1125899906842620, //Pi
     1152921504606850000, //Ei
     1180591620717410000000, //Zi
-    1208925819614630000000000 //Yi
+    1208925819614630000000000, //Yi
 ];
 
-let bt = [
-    1000,
-    1000000,
-    1000000000,
-    1000000000000,
-    1000000000000000,
-    1000000000000000000,
-    1000000000000000000000,
-    1000000000000000000000000
-];
-
+let bt = [1000, 1000000, 1000000000, 1000000000000, 1000000000000000, 1000000000000000000, 1000000000000000000000, 1000000000000000000000000];
 
 //----------------------------------------------------------
 console.log('loaded vpk3dCommon.js');
